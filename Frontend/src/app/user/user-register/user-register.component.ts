@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UserServiceService } from 'src/app/services/user-service.service';
 
 @Component({
   selector: 'app-user-register',
@@ -9,17 +10,11 @@ import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors,
 export class UserRegisterComponent implements OnInit {
 
   public registrationForm!: FormGroup;
-  constructor(private formBuilder: FormBuilder) { }
+  public user: any = {};
+
+  constructor(private formBuilder: FormBuilder, private userService: UserServiceService) { }
 
   ngOnInit() {
-    // this.registrationForm = new FormGroup({
-    //   userName: new FormControl(null, Validators.required),
-    //   email: new FormControl(null, [Validators.required, Validators.email]),
-    //   password: new FormControl(null, [Validators.required, Validators.minLength(8)]),
-    //   confirmPassword: new FormControl(null, Validators.required),
-    //   mobile: new FormControl(null, [Validators.required, Validators.minLength(10)])  
-    // }, this.passwordMatchingValidator);
-
     this.createRegistrationForm();
   }
 
@@ -60,8 +55,10 @@ export class UserRegisterComponent implements OnInit {
     return this.registrationForm.get('mobile');
   }
 
-  onSubmit(){
-    console.log(this.registrationForm);
+  onSubmit() {
+    console.log(this.registrationForm.value);
+    this.user = Object.assign(this.user, this.registrationForm.value);
+    this.userService.addUser(this.user);
+    this.registrationForm.reset();
   }
-
 }
