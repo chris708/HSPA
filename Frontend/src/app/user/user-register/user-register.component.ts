@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { IUser } from 'src/app/model/user.interface';
 import { UserServiceService } from 'src/app/services/user-service.service';
 
 @Component({
@@ -10,7 +11,8 @@ import { UserServiceService } from 'src/app/services/user-service.service';
 export class UserRegisterComponent implements OnInit {
 
   public registrationForm!: FormGroup;
-  public user: any = {};
+  public user!: IUser;
+  public userSubmitted: boolean = false;
 
   constructor(private formBuilder: FormBuilder, private userService: UserServiceService) { }
 
@@ -35,6 +37,31 @@ export class UserRegisterComponent implements OnInit {
       return { notMatched: true };
   }
 
+  
+  onSubmit() {
+    console.log(this.registrationForm.value);
+    this.userSubmitted = true;
+    if(this.registrationForm.valid){
+      //this.user = Object.assign(this.user, this.registrationForm.value);
+      this.userService.addUser(this.userData());
+      this.registrationForm.reset();
+      this.userSubmitted = false;
+    }
+  }
+
+  userData(): IUser {
+    return this.user = {
+      userName: this.userName?.value,
+      email: this.email?.value,
+      password: this.password?.value,
+      mobile: this.mobile?.value
+    }
+  }
+
+  //-------------------------------------------
+  // Getters methods for all form controls
+  //-------------------------------------------
+
   get userName() {
     return this.registrationForm.get('userName');
   }
@@ -55,10 +82,4 @@ export class UserRegisterComponent implements OnInit {
     return this.registrationForm.get('mobile');
   }
 
-  onSubmit() {
-    console.log(this.registrationForm.value);
-    this.user = Object.assign(this.user, this.registrationForm.value);
-    this.userService.addUser(this.user);
-    this.registrationForm.reset();
-  }
 }
